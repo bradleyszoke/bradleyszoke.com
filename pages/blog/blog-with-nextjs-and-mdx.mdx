@@ -22,9 +22,11 @@ MDX enables the use of JSX within markdown files, allowing seamless mixing of cu
 
 Once this is finished, create a new folder within 'pages' to hold your blog posts.
 
-Remember, Next.js determines domain structure using the file structure of your project—be conscious of this when naming your folder. For example, if you want your blog posts to be located in 'domain.com/posts/post-title', you would name this folder 'posts'. I'll personally be naming this folder 'blog' and will be referring to it as such for the remainder of this guide.
+Remember, Next.js determines domain structure using the file structure of your project—be conscious of this when naming your folder. For example, if you want your blog posts to be located in 'domain.com/posts/post-title', you would name this folder 'posts'.
 
-Next, create a file in the blog folder with an MDC extension, fill it with placeholder markdown, and try to visit its corresponding page. I made pages/blog/test-post.mdx, so I went to localhost:3000/blog/test-post.
+I'll personally be naming this folder 'blog' and will be referring to it as such for the remainder of this guide.
+
+Next, create a file in the blog folder with an MDX extension, fill it with placeholder markdown, and try to visit its corresponding page. I made pages/blog/test-post.mdx, so I went to localhost:3000/blog/test-post.
 
 This, unfortunately, will result in a 404.
 
@@ -59,7 +61,9 @@ module.exports = withMDX({
 });
 ```
 
-withMDX now holds our configuration. Thanks to the @next/mdx package provided by Next, our site is now able to parse MDX files. Notice the plugin properties on the options object. These allow for additional tweaks to how MDX is handled on our site. At the moment the only plugin we're using is remark-frontmatter. We'll see the use case for this soon.
+withMDX now holds our configuration. Thanks to the @next/mdx package provided by Next, our site is now able to parse MDX files. Notice the plugin properties on the options object. These allow for additional tweaks to how MDX is handled on our site.
+
+At the moment the only plugin we're using is remark-frontmatter. We'll see the use case for this soon.
 
 In the meantime, restart your app if you haven't already and visit the blog post page that previously threw a 404.
 
@@ -103,7 +107,7 @@ const BlogPost = ({ children }: { children: any }): JSX.Element => {
 export default BlogPost;
 ```
 
-This is a simple React component that renders its children inside of a div, which is styled using CSS modules. The CSS file contains basic styling to center the content.
+This is a simple React component that renders its children inside of a div, which is styled using CSS modules. The CSS file contains basic styling to center the content:
 
 ```css
 .blogPost {
@@ -248,7 +252,7 @@ export const getStaticProps: GetStaticProps = async () => {
 
 Lastly, we have the getStaticProps method. At the moment we simply return a props object containing an empty array. We need to populate this with post data by searching the relevant directories and parsing the info we find.
 
-## Fetching And Parsing Posts
+### Fetching And Parsing Posts
 
 To parse the metadata made available by remark-frontmatter, we'll need another npm package:
 
