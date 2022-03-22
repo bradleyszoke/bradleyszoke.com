@@ -1,0 +1,362 @@
+---
+  title: 'Building A Blog With TypeScript, Next.js, And MDX'
+  description: 'Next.js, Markdown, and MDX allow for the creation of fast, highly-customizable blogs. Here is how it works...'
+  category: 'Dev'
+---
+
+import BlogPost from '../../components/BlogPost';
+
+export const meta = {
+  title: 'Building A Blog With TypeScript, Next.js, And MDX',
+};
+
+# Building A Blog With TypeScript, Next.js, And MDX
+
+MDX enables the use of JSX within markdown files, allowing seamless mixing of custom components and content. Combining this with Next.js results in fast, search engine friendly, highly-customizable blogs such as the one you're currently reading!
+
+[This blog is open-source, so feel free to check out the code for more details](https://github.com). For a step-by-step on building a similar site, read on 👍
+
+## Project Setup
+
+[Next.js provides zero-configuration setup for TypeScript projects.](https://nextjs.org/docs/basic-features/typescript) Run the commands on this page to generate the initial project.
+
+Once this is finished, create a new folder within 'pages' to hold your blog posts.
+
+Remember, Next.js determines domain structure using the file structure of your project—be conscious of this when naming your folder. For example, if you want your blog posts to be located in 'domain.com/posts/post-title', you would name this folder 'posts'. I'll personally be naming this folder 'blog' and will be referring to it as such for the remainder of this guide.
+
+Next, create a file in the blog folder with an MDC extension, fill it with placeholder markdown, and try to visit its corresponding page. I made pages/blog/test-post.mdx, so I went to localhost:3000/blog/test-post.
+
+This, unfortunately, will result in a 404.
+
+## How To Render MDX In Next.js
+
+Next.js is equipped to handle many file types, but MDX is not one of them. We need to fix this by providing instructions on how to parse these files.
+
+Install the necessary npm packages:
+
+```terminal
+npm i @next/mdx @mdx-js/react remark-frontmatter@3.0.0
+```
+
+Note: Version 3.0.0 has been specified for remark-frontmatter due to ESM errors that arise with newer versions. There may be a better way to handle this, it's the solution I've gone with for the moment though.
+
+These packages allow us to configure Next.js to handle MDX files. To do so, replace the contents of next.config.js with the following:
+
+```js
+var remarkFrontmatter = require('remark-frontmatter');
+
+const withMDX = require('@next/mdx')({
+  extension: /\.mdx?$/,
+  options: {
+    remarkPlugins: [remarkFrontmatter],
+    rehypePlugins: [],
+    providerImportSource: '@mdx-js/react',
+  },
+});
+
+module.exports = withMDX({
+  pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
+});
+```
+
+withMDX now holds our configuration. Thanks to the @next/mdx package provided by Next, our site is now able to parse MDX files. Notice the plugin properties on the options object. These allow for additional tweaks to how MDX is handled on our site. At the moment the only plugin we're using is remark-frontmatter. We'll see the use case for this soon.
+
+In the meantime, restart your app if you haven't already and visit the blog post page that previously threw a 404.
+
+Assuming configuration went as expected, you should have parsed markdown!
+
+## Metadata With MDX
+
+Each post will have unique content, which we've just taken care of, but it will also have unique metadata, such as its title and description. How can we handle this? Well, let's use remark-frontmatter, since we've already installed it and all.
+
+This package allows us to specify metadata at the top of each MDX file (note: this does not automatically create meta tags). The formatting is straightforward, but a bit difficult to put into words, so I'll just provide an example:
+
+```jsx
+---
+title: 'Test Title'
+description: 'The blog post to test all blog posts.'
+category: 'Basket Weaving'
+---
+```
+
+Three dashes, metadata, and three more dashes. Help yourself to a little metadata sandwich.
+
+Make sure this is at the top of your MDX file and remark-frontmatter will prevent it from being displayed to the user while giving us the ability to use this data later.
+
+## How To Style MDX In Next.js
+
+We can render MDX, but it's not pretty. To apply custom styling to MDX files we need a custom component, which we can tell Next.js to use as a template for our blog posts.
+
+Here is what my BlogPost component looks like (located in components/BlogPost):
+
+```tsx
+import styles from './BlogPost.module.css';
+
+const BlogPost = ({ children }: { children: any }): JSX.Element => {
+  return (
+    <>
+      <div className={styles.blogPost}>{children}</div>
+    </>
+  );
+};
+
+export default BlogPost;
+```
+
+This is a simple React component that renders its children inside of a div, which is styled using CSS modules. The CSS file contains basic styling to center the content.
+
+```css
+.blogPost {
+  width: 800px;
+  margin: auto;
+}
+```
+
+Now, instead of filling our MDX file with simple markdown and metadata, we mix in a tasteful bit of JavaScript to use our newly defined component, along with our newly created styles:
+
+```tsx
+---
+title: 'Test Title'
+description: 'The blog post to test all blog posts.'
+category: 'Basket Weaving'
+---
+
+import BlogPost from '../../components/BlogPost';
+
+# Your Markdown Here
+
+export default ({ children }) => <BlogPost>{children}</BlogPost>;
+```
+
+We now have the ability to render and style our blog posts using MDX and CSS, but for our visitors to find these posts, we'll have to list them somewhere.
+
+## Creating A List Of Blog Posts With Next.js And MDX
+
+### Preparation
+
+On whichever page this blog list will be displayed, we'll need to fetch the post data, parse it into something readable by components, then pass it to said components. We can use the getStaticProps method for this. This way the data fetching will be done at build time, meaning visitors won't have to wait for data handling with each visit. We're able to do this because we know these posts won't be changing between builds.
+
+I'm displaying my blog list right on the index page, so my getStaticProps method is placed as follows:
+
+```tsx
+import type { GetStaticProps, NextPage } from 'next';
+import styles from '../styles/Home.module.css';
+import Link from 'next/link';
+
+type PostInfo = {
+  title: string;
+  category: string;
+  description: string;
+  wordCount: number;
+  slug: string;
+};
+
+type HomeProps = {
+  posts: PostInfo[];
+};
+
+const Home: NextPage<HomeProps> = ({ posts }) => {
+  return (
+    <div className={styles.container}>
+      <ul>
+        {posts.map(({ title, slug, category }) => {
+          return (
+            <li key={title}>
+              <Link href={`/blog/${slug}`}>
+                <a>
+                  <h2>{title}</h2>
+                </a>
+              </Link>
+              <p>{category}</p>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+};
+
+export const getStaticProps: GetStaticProps = async () => {
+  return {
+    props: {
+      posts: [],
+    },
+  };
+};
+
+export default Home;
+```
+
+There are a few things to explain here—let's go from top to bottom.
+
+```tsx
+type PostInfo = {
+  title: string;
+  category: string;
+  description: string;
+  wordCount: number;
+  slug: string;
+};
+```
+
+The PostInfo type is a description of what data is needed from each post to pass the complete list. This, for organizational purposes, should probably be stored in a separate directory, but for simplicity's sake, I've included it in the index file.
+
+```tsx
+type HomeProps = {
+  posts: PostInfo[];
+};
+```
+
+This defines the props our Home page will accept. In this case, an array of objects of type PostInfo.
+
+```tsx
+const Home: NextPage<HomeProps> = ({ posts }) => {
+  return (
+    <div className={styles.container}>
+      <ul>
+        {posts.map(({ title, slug, category }) => {
+          return (
+            <li key={title}>
+              <Link href={`/blog/${slug}`}>
+                <a>
+                  <h2>{title}</h2>
+                </a>
+              </Link>
+              <p>{category}</p>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+};
+```
+
+Here, we specify what to display on the Home page. Inside of an unordered list, we map through our posts (which we've accepted through the component props), creating a list item for each.
+
+We will have all data specified in the PostInfo type available here, so feel free to customize your list however you please. In this example, I've displayed the title and category, while also linking to the correct page using next/link.
+
+```tsx
+export const getStaticProps: GetStaticProps = async () => {
+  return {
+    props: {
+      posts: [],
+    },
+  };
+};
+```
+
+Lastly, we have the getStaticProps method. At the moment we simply return a props object containing an empty array. We need to populate this with post data by searching the relevant directories and parsing the info we find.
+
+## Fetching And Parsing Posts
+
+To parse the metadata made available by remark-frontmatter, we'll need another npm package:
+
+```terminal
+npm i gray-matter
+```
+
+We need to import this package, along with fs and path, which allows us to traverse our project directory.
+
+```tsx
+import fs from 'fs';
+import path from 'path';
+import matter from 'gray-matter';
+```
+
+Now we're prepared to fetch and parse our posts:
+
+```tsx
+export const getStaticProps: GetStaticProps = async () => {
+  const files = fs.readdirSync(path.join('pages/blog'));
+
+  const posts: PostInfo[] = files.map((file) => {
+    const rawFile = fs.readFileSync(path.join(`pages/blog/${file}`), 'utf-8');
+    const { data } = matter(rawFile);
+
+    const slug = file.split('.')[0];
+    const wordCount = rawFile.split(' ').length;
+
+    const postInfo: PostInfo = {
+      title: data.title,
+      category: data.category,
+      description: data.description,
+      wordCount: wordCount,
+      slug: slug,
+    };
+
+    return postInfo;
+  });
+
+  return {
+    props: {
+      posts: posts,
+    },
+  };
+};
+```
+
+Behold, our functioning getStaticProps method.
+
+If you check the source code of this site you'll see I've wrapped most of this up inside of a 'getPosts' function, which resides in another folder. Again, to keep the guide simple, I've kept it lumped into this file, but it is probably best to separate it.
+
+Structure aside, this is quite a bit of code, so let's walk through it step by step.
+
+```tsx
+const files = fs.readdirSync(path.join('pages/blog'));
+
+const posts: PostInfo[] = files.map((file) => {
+  ...
+}
+```
+
+Grab each file within the specified directory (in this case, pages/blog), then begin mapping through them. We give 'posts' a type of PostInfo[] because we aim to loop through these files and extract all necessary data from each of them to build a PostInfo object.
+
+```tsx
+const rawFile = fs.readFileSync(path.join(`pages/blog/${file}`), 'utf-8');
+const { data } = matter(rawFile);
+```
+
+Using fs's 'readFileSync' method, read the current file using utf-8 encoding. Then, using gray matter, extract the metadata.
+
+```tsx
+const slug = file.split('.')[0];
+const wordCount = rawFile.split(' ').length;
+```
+
+We know Next builds domain structure using file names, so we can do the same. Get the slug for the current file by splitting the file name at the '.' (where .mdx begins) and taking only the first substring.
+
+For word count, simply split the file's text at each space and measure the length of the returned array. This is an admittedly rough way to gauge word count, as it will also be grabbing our metadata and JSX. I'm only using this as a way to estimate read time, so precision isn't a huge concern, but if this is not the case for you a more creative solution may be necessary.
+
+```tsx
+export const getStaticProps: GetStaticProps = async () => {
+    ...
+
+    const postInfo: PostInfo = {
+      title: data.title,
+      category: data.category,
+      description: data.description,
+      wordCount: wordCount,
+      slug: slug,
+    };
+
+    return postInfo;
+  });
+
+  return {
+    props: {
+      posts: posts,
+    },
+  };
+};
+```
+
+Finally, define a PostInfo object using this data, return the object while mapping, then pass the posts array as a static prop.
+
+With this, you should now see a list of blog posts on whichever page you've been working on, and upon clicking an item of this list, be directed to the post itself 🎉
+
+## Where To Go From Here
+
+That covers the basics! For a look at some more advanced design, meta tags, code block formatting, and a few other extras, feel free to check out [the source code for this site](https://github.com). If you have questions, find mistakes in this guide, or want to reach out for any reason, my email is right at the top of the page.
+
+export default ({ children }) => <BlogPost meta={meta}>{children}</BlogPost>;

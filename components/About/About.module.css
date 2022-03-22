@@ -1,0 +1,17 @@
+.about {
+  margin-top: 80px;
+  padding-bottom: 40px;
+  font-size: 24px;
+}
+
+.about a:nth-of-type(1) {
+  color: #eaa3ff;
+}
+
+.about a:nth-of-type(2) {
+  color: #fdf79b;
+}
+
+.about a:nth-of-type(3) {
+  color: #a0eeff;
+}

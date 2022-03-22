@@ -1,0 +1,10 @@
+.blogPost h1 {
+  padding-top: 20px;
+  text-align: center;
+}
+
+.blogPost p,
+.blogPost li {
+  font-size: 18px;
+  line-height: 32px;
+}
