@@ -29,7 +29,11 @@ const About = (): JSX.Element => {
           Chrome extension
         </a>{' '}
         built with React, and an{' '}
-        <a href="https://github.com" target="_blank" rel="noreferrer">
+        <a
+          href="https://github.com/bradleyszoke/bradleyszoke.com"
+          target="_blank"
+          rel="noreferrer"
+        >
           open-source personal website and blog
         </a>{' '}
         built with Next.js.
