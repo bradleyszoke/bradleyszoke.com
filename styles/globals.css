@@ -16,7 +16,7 @@ a {
 }
 
 .container {
-  width: 800px;
+  max-width: 800px;
   margin: auto;
   padding-left: 40px;
   padding-right: 40px;
