@@ -4,12 +4,10 @@ const About = (): JSX.Element => {
   return (
     <div className={styles.about}>
       <p>
-        Hi, I&apos;m <strong>Bradley Szoke</strong>.
+        Hi, I&apos;m <strong>Bradley Szoke</strong>!
       </p>
       <p>
-        I&apos;m currently attending the University of Illinois in Springfield
-        and expect to graduate with a Bachelor&apos;s in Computer Science in May
-        2022 🎉
+        I graduated in May 2022 with my Bachelor&apos;s in Computer Science and now work for State Farm as a Junior Software Engineer!
       </p>
       <p>
         Some projects of mine include a{' '}
