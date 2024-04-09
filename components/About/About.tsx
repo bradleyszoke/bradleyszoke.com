@@ -7,7 +7,8 @@ const About = (): JSX.Element => {
         Hi, I&apos;m <strong>Bradley Szoke</strong>!
       </p>
       <p>
-        I graduated in May 2022 with my Bachelor&apos;s in Computer Science and now work for State Farm as a Junior Software Engineer.
+        I received my Bachelor&apos;s in Computer Science in May 2022 and
+        currently work for State Farm as a Software Engineer.
       </p>
       <p>
         Some projects of mine include a{' '}
