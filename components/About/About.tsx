@@ -7,35 +7,28 @@ const About = (): JSX.Element => {
         Hi, I&apos;m <strong>Bradley Szoke</strong>!
       </p>
       <p>
-        I received my Bachelor&apos;s in Computer Science in May 2022 and
-        currently work for State Farm as a Software Engineer.
+        I received my Bachelor&apos;s in Computer Science in May 2022.
       </p>
       <p>
-        Some projects of mine include a{' '}
+        Currently, I work for State Farm, where I&apos;m building an automated rate indication solution using Python, Pandas, FastAPI, and more.
+      </p>
+      <p>
+        Some of my other projects include a{' '}
         <a
           href="https://www.oculus.com/experiences/go/1901607623239776/"
           target="_blank"
           rel="noreferrer"
         >
-          Virtual Reality game
+          virtual reality game
         </a>{' '}
-        with 1000+ sales, a{' '}
-        <a
-          href="https://chrome.google.com/webstore/detail/whatboard/npaccllkphikfkdbmedailkemffjffgg"
-          target="_blank"
-          rel="noreferrer"
-        >
-          Chrome extension
-        </a>{' '}
-        built with React, and an{' '}
+        with 1000+ sales and my{' '}
         <a
           href="https://github.com/bradleyszoke/bradleyszoke.com"
           target="_blank"
           rel="noreferrer"
         >
           open-source personal website and blog
-        </a>{' '}
-        built with Next.js.
+        </a> built with Next.js.
       </p>
     </div>
   );
