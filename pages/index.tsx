@@ -9,33 +9,32 @@ import About from '../components/About';
 import BlogList from '../components/BlogList';
 
 type HomeProps = {
-  posts: PostInfo[];
+    posts: PostInfo[];
 };
 
 const Home: NextPage<HomeProps> = ({ posts }) => {
-  return (
-    <div className="container">
-      <Head>
-        <title>Bradley Szoke - Software Engineer</title>
-      </Head>
+    return (
+        <div className="container">
+            <Head>
+                <title>Bradley Szoke - Software Engineer</title>
+            </Head>
 
-      <main>
-        <Nav />
-        <About />
-        <BlogList posts={posts} />
-      </main>
-    </div>
-  );
+            <main>
+                <Nav />
+                <About />
+            </main>
+        </div>
+    );
 };
 
 export const getStaticProps: GetStaticProps = async () => {
-  const posts = getBlogPosts();
+    const posts = getBlogPosts();
 
-  return {
-    props: {
-      posts: posts,
-    },
-  };
+    return {
+        props: {
+            posts: posts,
+        },
+    };
 };
 
 export default Home;
